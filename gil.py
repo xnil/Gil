@@ -24,9 +24,6 @@ class Utils:
     def glub(cls):
         Utils.respond(["Glub.", "Glubbub Glub.", "Glubbety Glubbuby Glub.", "Glub Glubbety."][randint(0,3)])
     @classmethod
-    def notify_channel(cls, message):
-        meta["sock"].send("NOTICE %s :%s\r\n" % (meta["data"].split(' ')[2], message))
-    @classmethod
     def notify_user(cls, user, message):
         meta["sock"].send("NOTICE %s :%s\r\n" % (user, message))
     @classmethod
@@ -44,11 +41,11 @@ class Utils:
         tmp = tmp[tmp_i:tmp.find("</p>", tmp_i)]
         quote = tmp[tmp.find("<br />")+6:].replace("\n", "").split("<br />")
         if quote == [""]:
-            Utils.notify_channel("Invalid quote index.")
+            Utils.notify_user("Invalid quote index.")
         else:
-            Utils.notify_channel("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
+            Utils.notify_user("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
             for line in quote:
-                Utils.notify_channel(line.lstrip().rstrip().replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", "  "))
+                Utils.notify_user(line.lstrip().rstrip().replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", "  "))
 
 meta = {}
 meta["botname"]  = "Gil"
