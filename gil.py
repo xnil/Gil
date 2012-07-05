@@ -43,9 +43,12 @@ class Utils:
         tmp_i = tmp.find("<p class=\"quote\">")
         tmp = tmp[tmp_i:tmp.find("</p>", tmp_i)]
         quote = tmp[tmp.find("<br />")+6:].replace("\n", "").split("<br />")
-        Utils.notify_channel("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
-        for line in quote:
-            Utils.notify_channel(line.lstrip().rstrip().replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", "  "))
+        if quote == "":
+            Utils.notify_channel("Invalid quote index.")
+        else:
+            Utils.notify_channel("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
+            for line in quote:
+                Utils.notify_channel(line.lstrip().rstrip().replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", "  "))
 
 meta = {}
 meta["botname"]  = "Gil"
