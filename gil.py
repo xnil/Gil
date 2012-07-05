@@ -140,6 +140,9 @@ while (1):
                 elif meta["message"][0] == "quotediscard":
                     del meta["blockquoters"][meta["user"]]
                     Utils.respond("Glub...")
+                elif meta["blockquoters"][meta["user"]].count("\n") == 12:
+                    del meta["blockquoters"][meta["user"]]
+                    Utils.respond("Glub... (Quote discarded, too long)")
                 else:
                     meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
             elif meta["message"][0].lower().startswith(meta["botname"].lower()):
