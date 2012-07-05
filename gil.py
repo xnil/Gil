@@ -13,13 +13,19 @@ import urllib
 from random import randint
 
 if (len(sys.argv) == 1):
-	print("No server specified.")
-	exit()
+    print("No server specified.")
+    exit()
 
 class Utils:
     @classmethod
     def get_username(cls, message):
         return message[1:message.find("!")].lower()
+    @classmethod
+    def glub(cls):
+        Utils.respond(["Glub.", "Glubbub Glub.", "Glubbety Glubbuby Glub.", "Glub Glubbety."][randint(0,3)])
+    @classmethod
+    def notify_channel(cls, message):
+        meta["sock"].send("NOTICE %s :%s\r\n" % (meta["data"].split(' ')[2], message))
     @classmethod
     def notify_user(cls, user, message):
         meta["sock"].send("NOTICE %s :%s\r\n" % (user, message))
@@ -28,14 +34,25 @@ class Utils:
         meta["sock"].send("PRIVMSG %s :%s: %s\r\n" % (meta["data"].split(' ')[2], meta["user"], message))
         print("Said: \"%s\"" % message)
     @classmethod
-    def glub(cls):
-        Utils.respond(["Glub.", "Glubbub Glub.", "Glubbety Glubbuby Glub.", "Glub Glubbety."][randint(0,3)])
+    def spit_quote(cls, params):
+        if isinstance(params, dict):
+            params = urllib.urlencode(params)
+        q = urllib.urlopen(meta["quotedburl"]+"?%s" % params)
+        tmp = q.read()
+        q.close()
+        tmp_i = tmp.find("<p class=\"quote\">")
+        tmp = tmp[tmp_i:tmp.find("</p>", tmp_i)]
+        quote = tmp[tmp.find("<br />")+6:].replace("\n", "").split("<br />")
+        Utils.notify_channel("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
+        for line in quote:
+            Utils.notify_channel(line.lstrip().rstrip().replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", "  "))
 
 meta = {}
 meta["botname"]  = "Gil"
 meta["data"]     = ""
 meta["message"]  = ""
 meta["user"]     = ""
+meta["quotedburl"] = "http://awfulnet.org/quotes/index.php"
 meta["server"]   = sys.argv[1]
 meta["sock"]     = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 meta["channels"] = sys.argv[2:]
@@ -71,8 +88,10 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "Command `info <user>`: Displays personal info for <user>.")
     if target == "join":
         Utils.notify_user(meta["user"], "Command `join <#channel> [#channel] [#channel]...`: Tells %s to join all of the listed channels.")
+    if target == "spitquote":
+        Utils.notify_user(meta["user"], "Command `spitquote [quoteID]`: Spits out a random quote. If [quoteID] is provided, spits out the indicated quote.")
     if target == "quote":
-        Utils.notify_user(meta["user"], "Command `quote <quote>`: Submits <quote> to the Awfulnet QDB (http://awfulnet.org/quotes).")
+        Utils.notify_user(meta["user"], "Command `quote <quote>`: Submits <quote> to the Awfulnet QDB ("+meta["quotedburl"]+").")
     if target == "quotebegin":
         Utils.notify_user(meta["user"], "Command `quotebegin`")
         Utils.notify_user(meta["user"], "Example:")
@@ -80,7 +99,7 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "<quote line 1>")
         Utils.notify_user(meta["user"], "<quote line 2>")
         Utils.notify_user(meta["user"], "quoteend")
-        Utils.notify_user(meta["user"], "Submits a multiline quote to the Awfulnet QDB (http://awfulnet.org/quotes). If you mess up, replace \"quoteend\" with \"quotediscard\" and start over.")
+        Utils.notify_user(meta["user"], "Submits a multiline quote to the Awfulnet QDB ("+meta["quotedburl"]+"). If you mess up, replace \"quoteend\" with \"quotediscard\" and start over.")
 def info_(*arg):
     if len(arg) != 0:
         who = arg[0].lower()
@@ -91,6 +110,12 @@ def info_(*arg):
 def join_(*arg):
     meta["sock"].send(''.join(["JOIN %s\r\n" % channel for channel in arg if channel.startswith("#")]))
     Utils.glub()
+def spitquote_(*arg):
+    if len(arg) == 0:
+        Utils.spit_quote({"p":"random"})
+    else:
+        params = arg[0].lstrip("#")
+        Utils.spit_quote(params)     
 def quote_(*arg):
     """Works with QdbS. You may modify this function to get it to work with other sites using QdbS by simply changing the URL."""
     if len(arg) >= 1:
@@ -103,7 +128,7 @@ def quote_(*arg):
 def quotebegin_(*arg):
     """Similar to `quote_` but used for multiline quotes."""
     meta["blockquoters"][meta["user"]] = ""
-commands = {"add":add_, "help":help_, "info":info_, "join":join_, "quote":quote_, "quotebegin":quotebegin_}
+commands = {"add":add_, "help":help_, "info":info_, "join":join_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
