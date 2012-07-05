@@ -43,7 +43,7 @@ class Utils:
         tmp_i = tmp.find("<p class=\"quote\">")
         tmp = tmp[tmp_i:tmp.find("</p>", tmp_i)]
         quote = tmp[tmp.find("<br />")+6:].replace("\n", "").split("<br />")
-        if quote == "":
+        if quote == [""]:
             Utils.notify_channel("Invalid quote index.")
         else:
             Utils.notify_channel("Quote %s:" % tmp[tmp.find("<u>")+3:tmp.find("</u>")])
