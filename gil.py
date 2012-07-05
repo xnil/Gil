@@ -39,6 +39,7 @@ meta["user"]     = ""
 meta["server"]   = sys.argv[1]
 meta["sock"]     = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 meta["channels"] = sys.argv[2:]
+meta["blockquoters"] = {}
 meta["userinfo"] = {}
 #Load users
 for user in [f for f in os.listdir("./") if os.path.isfile(os.path.join("./", f)) and f.endswith(".user")]:
@@ -59,6 +60,7 @@ def add_(*arg):
 def help_(*arg):
     if len(arg) == 0:
         Utils.respond("Commands: %s" % ', '.join([x for x in commands]))
+        Utils.respond("say \""+meta["botname"]+" help <commandname>\" for help with a specific command.")
     else:
         target = arg[0].lower()
     if target == "add":
@@ -70,7 +72,15 @@ def help_(*arg):
     if target == "join":
         Utils.notify_user(meta["user"], "Command `join <#channel> [#channel] [#channel]...`: Tells %s to join all of the listed channels.")
     if target == "quote":
-        Utils.notify_user(meta["user"], "Command `quote <quote>`: Submits <quote> to the Awfulnet QDB.")
+        Utils.notify_user(meta["user"], "Command `quote <quote>`: Submits <quote> to the Awfulnet QDB (http://awfulnet.org/quotes).")
+    if target == "quotebegin":
+        Utils.notify_user(meta["user"], "Command `quotebegin`")
+        Utils.notify_user(meta["user"], "Example:")
+        Utils.notify_user(meta["user"], "gil quotebegin")
+        Utils.notify_user(meta["user"], "<quote line 1>")
+        Utils.notify_user(meta["user"], "<quote line 2>")
+        Utils.notify_user(meta["user"], "quoteend")
+        Utils.notify_user(meta["user"], "Submits a multiline quote to the Awfulnet QDB (http://awfulnet.org/quotes). If you mess up, replace \"quoteend\" with \"quotediscard\" and start over.")
 def info_(*arg):
     if len(arg) != 0:
         who = arg[0].lower()
@@ -90,7 +100,10 @@ def quote_(*arg):
         q = urllib.urlopen("http://awfulnet.org/quotes/index.php", params)
         q.close()
         Utils.glub()
-commands = {"add":add_, "help":help_, "info":info_, "join":join_, "quote":quote_}
+def quotebegin_(*arg):
+    """Similar to `quote_` but used for multiline quotes."""
+    meta["blockquoters"][meta["user"]] = ""
+commands = {"add":add_, "help":help_, "info":info_, "join":join_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
@@ -120,7 +133,16 @@ while (1):
         if (meta["data"].split(' ')[1] == "PRIVMSG"):
             meta["user"] = Utils.get_username(meta["data"])
             meta["message"] = meta["data"][meta["data"].find(":", 1)+1:].rstrip().split(' ')
-            if meta["message"][0].lower().startswith(meta["botname"].lower()):
+            if meta["user"] in meta["blockquoters"]:
+                if meta["message"][0] == "quoteend":
+                    quote_(meta["blockquoters"][meta["user"]])
+                    del meta["blockquoters"][meta["user"]]
+                elif meta["message"][0] == "quotediscard":
+                    del meta["blockquoters"][meta["user"]]
+                    Utils.respond("Glub...")
+                else:
+                    meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
+            elif meta["message"][0].lower().startswith(meta["botname"].lower()):
                 try:
                     commands[meta["message"][1].lower()](*meta["message"][2:])
                 except KeyError:
