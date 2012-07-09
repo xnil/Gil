@@ -110,6 +110,14 @@ def info_(*arg):
 def join_(*arg):
     meta["sock"].send(''.join(["JOIN %s\r\n" % channel for channel in arg if channel.startswith("#")]))
     Utils.glub()
+def spitfact_(*arg):
+    q = urllib.urlopen("http://randomfactgenerator.net/")
+    tmp = q.read()
+    q.close()
+    tmp_i = tmp.find("<div id='z'>")
+    print("yus!")
+    tmp = tmp[tmp_i+12:tmp.find("<br/>", tmp_i)]
+    Utils.notify_user(meta["user"], tmp)
 def spitquote_(*arg):
     if len(arg) == 0:
         Utils.spit_quote({"p":"random"})
@@ -128,7 +136,7 @@ def quote_(*arg):
 def quotebegin_(*arg):
     """Similar to `quote_` but used for multiline quotes."""
     meta["blockquoters"][meta["user"]] = ""
-commands = {"add":add_, "help":help_, "info":info_, "join":join_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
+commands = {"add":add_, "help":help_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
