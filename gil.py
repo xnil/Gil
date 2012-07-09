@@ -88,6 +88,8 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "Command `info <user>`: Displays personal info for <user>.")
     if target == "join":
         Utils.notify_user(meta["user"], "Command `join <#channel> [#channel] [#channel]...`: Tells %s to join all of the listed channels.")
+    if target == "spitfact"
+        Utils.notify_user(meta["user"], "Command `spitfact`: Spits out a random fact.")
     if target == "spitquote":
         Utils.notify_user(meta["user"], "Command `spitquote [quoteID]`: Spits out a random quote. If [quoteID] is provided, spits out the indicated quote.")
     if target == "quote":
