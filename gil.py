@@ -103,6 +103,12 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "<quote line 2>")
         Utils.notify_user(meta["user"], "quoteend")
         Utils.notify_user(meta["user"], "Submits a multiline quote to the Awfulnet QDB ("+meta["quotedburl"]+"). If you mess up, replace \"quoteend\" with \"quotediscard\" and start over.")
+def i_(*arg):
+    print(arg)
+    if "love" in arg and arg[-1].startswith("you"):
+        Utils.respond("I glub you too!")
+    else:
+        raise KeyError
 def info_(*arg):
     if len(arg) != 0:
         who = arg[0].lower()
@@ -139,7 +145,7 @@ def quote_(*arg):
 def quotebegin_(*arg):
     """Similar to `quote_` but used for multiline quotes."""
     meta["blockquoters"][meta["user"]] = ""
-commands = {"add":add_, "help":help_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
+commands = {"add":add_, "help":help_, "i":i_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
