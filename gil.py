@@ -166,33 +166,33 @@ while (1):
         try:
             if (line != ''):
                 print(line)
-            if (line[:5] == "PING "):
-                meta["sock"].send("PONG "+line[5:]+"\r\n")
-            if (line.split(' ')[1] == "001"):
-                meta["sock"].send("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]]))
-            #If receiving PRIVMSG from a user
-            if (line.split(' ')[1] == "PRIVMSG"):
-                meta["user"] = Utils.get_username(line)
-                meta["message"] = line[line.find(":", 1)+1:].rstrip().split(' ')
-                if meta["user"] in meta["blockquoters"]:
-                    if meta["message"][0] == "quoteend":
-                        quote_(meta["blockquoters"][meta["user"]])
-                        del meta["blockquoters"][meta["user"]]
-                    elif meta["message"][0] == "quotediscard":
-                        del meta["blockquoters"][meta["user"]]
-                        Utils.respond("Glub...")
-                    elif meta["blockquoters"][meta["user"]].count("\n") == 12:
-                        del meta["blockquoters"][meta["user"]]
-                        Utils.respond("Glub... (Quote discarded, too long)")
-                    else:
-                        meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
-                elif meta["message"][0].lower().startswith(meta["botname"].lower()):
-                    try:
-                        commands[meta["message"][1].lower()](*meta["message"][2:])
-                    except KeyError:
-                        Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
-            elif (line.split(' ')[1] == "JOIN"):
-                meta["user"] = Utils.get_username(line)
-                Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
+                if (line[:5] == "PING "):
+                    meta["sock"].send("PONG "+line[5:]+"\r\n")
+                if (line.split(' ')[1] == "001"):
+                    meta["sock"].send("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]]))
+                #If receiving PRIVMSG from a user
+                if (line.split(' ')[1] == "PRIVMSG"):
+                    meta["user"] = Utils.get_username(line)
+                    meta["message"] = line[line.find(":", 1)+1:].rstrip().split(' ')
+                    if meta["user"] in meta["blockquoters"]:
+                        if meta["message"][0] == "quoteend":
+                            quote_(meta["blockquoters"][meta["user"]])
+                            del meta["blockquoters"][meta["user"]]
+                        elif meta["message"][0] == "quotediscard":
+                            del meta["blockquoters"][meta["user"]]
+                            Utils.respond("Glub...")
+                        elif meta["blockquoters"][meta["user"]].count("\n") == 12:
+                            del meta["blockquoters"][meta["user"]]
+                            Utils.respond("Glub... (Quote discarded, too long)")
+                        else:
+                            meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
+                    elif meta["message"][0].lower().startswith(meta["botname"].lower()):
+                        try:
+                            commands[meta["message"][1].lower()](*meta["message"][2:])
+                        except KeyError:
+                            Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
+                elif (line.split(' ')[1] == "JOIN"):
+                    meta["user"] = Utils.get_username(line)
+                    Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
         except:
             pass
