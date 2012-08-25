@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 ##
-#Gil IRC Bot
+# Gil IRC Bot
 ##
-#Copyright (C) 2012 by Carter Hinsley
-#All Rights Reserved.
+# Copyright (C) 2012 by Carter Hinsley
+# All Rights Reserved.
 ##
 import os
 import sys
@@ -40,6 +40,7 @@ class Utils:
         tmp_i = tmp.find("<p class=\"quote\">")
         tmp = tmp[tmp_i:tmp.find("</p>", tmp_i)]
         quote = tmp[tmp.find("<br />")+6:].replace("\n", "").split("<br />")
+        print quote
         if quote == [""]:
             Utils.notify_user(meta["user"], "Invalid quote index.")
         else:
@@ -88,7 +89,7 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "Command `info <user>`: Displays personal info for <user>.")
     if target == "join":
         Utils.notify_user(meta["user"], "Command `join <#channel> [#channel] [#channel]...`: Tells %s to join all of the listed channels.")
-    if target == "spitfact"
+    if target == "spitfact":
         Utils.notify_user(meta["user"], "Command `spitfact`: Spits out a random fact.")
     if target == "spitquote":
         Utils.notify_user(meta["user"], "Command `spitquote [quoteID]`: Spits out a random quote. If [quoteID] is provided, spits out the indicated quote.")
@@ -125,7 +126,7 @@ def spitquote_(*arg):
         Utils.spit_quote({"p":"random"})
     else:
         params = arg[0].lstrip("#")
-        Utils.spit_quote(params)     
+        Utils.spit_quote(params)
 def quote_(*arg):
     """Works with QdbS. You may modify this function to get it to work with other sites using QdbS by simply changing the URL."""
     if len(arg) >= 1:
@@ -154,39 +155,38 @@ print("\nConnection established with %s on port 6667." % meta["server"])
 meta["sock"].send("USER %s 0 * :%s\r\nNICK %s\r\n" % (meta["botname"], os.getlogin(), meta["botname"]))
 #Main loop
 while (1):
-    try:
-        meta["data"] = meta["sock"].recv(512)
-        if (meta["data"] != ''):
-            print(meta["data"])
-        if (meta["data"][:5] == "PING "):
-            meta["sock"].send("PONG "+meta["data"][5:]+"\r\n")
-        if ("\nPING " in meta["data"]):
-            meta["sock"].send("PONG "+meta["data"][meta["data"].find("\nPING ")+7:]+"\r\n")
-        if (meta["data"].split(' ')[1] == "001"):
-            meta["sock"].send("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]]))
-        #If receiving PRIVMSG from a user
-        if (meta["data"].split(' ')[1] == "PRIVMSG"):
-            meta["user"] = Utils.get_username(meta["data"])
-            meta["message"] = meta["data"][meta["data"].find(":", 1)+1:].rstrip().split(' ')
-            if meta["user"] in meta["blockquoters"]:
-                if meta["message"][0] == "quoteend":
-                    quote_(meta["blockquoters"][meta["user"]])
-                    del meta["blockquoters"][meta["user"]]
-                elif meta["message"][0] == "quotediscard":
-                    del meta["blockquoters"][meta["user"]]
-                    Utils.respond("Glub...")
-                elif meta["blockquoters"][meta["user"]].count("\n") == 12:
-                    del meta["blockquoters"][meta["user"]]
-                    Utils.respond("Glub... (Quote discarded, too long)")
-                else:
-                    meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
-            elif meta["message"][0].lower().startswith(meta["botname"].lower()):
-                try:
-                    commands[meta["message"][1].lower()](*meta["message"][2:])
-                except KeyError:
-                    Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
-        elif (meta["data"].split(' ')[1] == "JOIN"):
-            meta["user"] = Utils.get_username(meta["data"])
-            Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], meta["data"].rstrip().split(' ')[2][1:]))
-    except:
-        pass
+    meta["data"] = meta["sock"].recv(1024)
+    for line in meta["data"].split("\r\n"):
+        try:
+            if (line != ''):
+                print(line)
+            if (line[:5] == "PING "):
+                meta["sock"].send("PONG "+line[5:]+"\r\n")
+            if (line.split(' ')[1] == "001"):
+                meta["sock"].send("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]]))
+            #If receiving PRIVMSG from a user
+            if (line.split(' ')[1] == "PRIVMSG"):
+                meta["user"] = Utils.get_username(line)
+                meta["message"] = line[line.find(":", 1)+1:].rstrip().split(' ')
+                if meta["user"] in meta["blockquoters"]:
+                    if meta["message"][0] == "quoteend":
+                        quote_(meta["blockquoters"][meta["user"]])
+                        del meta["blockquoters"][meta["user"]]
+                    elif meta["message"][0] == "quotediscard":
+                        del meta["blockquoters"][meta["user"]]
+                        Utils.respond("Glub...")
+                    elif meta["blockquoters"][meta["user"]].count("\n") == 12:
+                        del meta["blockquoters"][meta["user"]]
+                        Utils.respond("Glub... (Quote discarded, too long)")
+                    else:
+                        meta["blockquoters"][meta["user"]] += ' '.join(meta["message"])+'\n'
+                elif meta["message"][0].lower().startswith(meta["botname"].lower()):
+                    try:
+                        commands[meta["message"][1].lower()](*meta["message"][2:])
+                    except KeyError:
+                        Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
+            elif (line.split(' ')[1] == "JOIN"):
+                meta["user"] = Utils.get_username(line)
+                Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
+        except:
+            pass
