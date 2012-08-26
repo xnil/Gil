@@ -104,7 +104,6 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "quoteend")
         Utils.notify_user(meta["user"], "Submits a multiline quote to the Awfulnet QDB ("+meta["quotedburl"]+"). If you mess up, replace \"quoteend\" with \"quotediscard\" and start over.")
 def i_(*arg):
-    print(arg)
     if "love" in arg and arg[-1].startswith("you"):
         Utils.respond("I glub you too!")
     else:
