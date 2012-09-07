@@ -85,6 +85,8 @@ def help_(*arg):
         Utils.notify_user(meta["user"], "Command `add <info>`: Used to store personal info.")
     if target == "help":
         Utils.notify_user(meta["user"], "Command `help [command]`: Displays help on a command. If no command is specified, displays command list.")
+    if target == "i":
+        Utils.notify_user(meta["user"], "Command `i ... love ... you`: Causes Gil to respond with \"<nick>: I glub you too!\"")
     if target == "info":
         Utils.notify_user(meta["user"], "Command `info <user>`: Displays personal info for <user>.")
     if target == "join":
