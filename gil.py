@@ -5,6 +5,7 @@
 # Copyright (C) 2012 by Carter Hinsley
 # All Rights Reserved.
 ##
+import re
 import os
 import sys
 import time
@@ -192,6 +193,22 @@ while (1):
                             commands[meta["message"][1].lower()](*meta["message"][2:])
                         except KeyError:
                             Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
+                    else:
+                        for word in meta["message"]:
+                            if (not word.lower().startswith("http")) and re.search(r"[^.]+\.[^.].+", word):
+                                try:
+                                    urllib.urlopen("http://%s" % word).close()
+                                    Utils.respond("FTFY: http://%s" % word)
+                                except:
+                                    pass
+                                break
+                            if word.lower().startswith("r/") and word[2:].isalnum():
+                                f = urllib.urlopen("http://reddit.com/%s" % word.lower())
+                                if "you must be at least eighteen to view this reddit" in f.read().lower():
+                                    Utils.respond("FTFY (NSFW): http://reddit.com/%s" % word.lower())
+                                else:
+                                    Utils.respond("FTFY: http://reddit.com/%s" % word.lower())
+                                break
                 elif (line.split(' ')[1] == "JOIN"):
                     meta["user"] = Utils.get_username(line)
                     Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
