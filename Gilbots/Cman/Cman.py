@@ -41,7 +41,7 @@ meta["userinfo"] = {}
 ##########
 #COMMANDS
 def c_(*arg):
-    code = "#include <stdlib.h>\n#include <stdio.h>\nint main(void) {%s return EXIT_SUCCESS;}" % arg
+    code = "#include <string.h>\n#include <stdlib.h>\n#include <stdio.h>\nint main(void) {%s return EXIT_SUCCESS;}" % arg
     f = open("./temp.c", 'w')
     f.write(code)
     f.close()
@@ -51,7 +51,10 @@ def c_(*arg):
         Utils.respond(output.rstrip())
     else:
         p = subprocess.Popen("./temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        Utils.respond(p.stdout.read())
+        output = p.stdout.read().rstrip('\n')
+        if (output == ''):
+            output = "Success."
+        Utils.respond(output)
         os.remove(os.path.abspath("temp"))
     os.remove(os.path.abspath("temp.c"))
 def cpp_(*arg):
@@ -65,7 +68,10 @@ def cpp_(*arg):
         Utils.respond(output.rstrip())
     else:
         p = subprocess.Popen("./temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        Utils.respond(p.stdout.read())
+        output = p.stdout.read().rstrip('\n')
+        if (output == ''):
+            output = "Success."
+        Utils.respond(output)
         os.remove(os.path.abspath("temp"))
     os.remove(os.path.abspath("temp.cpp"))
 commands = {"c":c_, "cpp":cpp_, "c++":cpp_}
