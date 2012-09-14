@@ -195,7 +195,7 @@ while (1):
                             Utils.respond(["Glub?", "Glubbuby Glubbub?"][randint(0,1)])
                     else:
                         for word in meta["message"]:
-                            if (not word.lower().startswith("http")) and re.search(r"[^.]+\.[^.].+", word):
+                            if (not word.lower().startswith("http")) and re.search(r"[^.]+\.[^.].+", word) and not ('@' in word):
                                 try:
                                     urllib.urlopen("http://%s" % word).close()
                                     Utils.respond("FTFY: http://%s" % word)
