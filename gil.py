@@ -164,7 +164,7 @@ meta["sock"].send("USER %s 0 * :%s\r\nNICK %s\r\n" % (meta["botname"], os.getlog
 #Main loop
 while (1):
     meta["data"] = meta["sock"].recv(1024)
-    for line in meta["data"].split("\r\n"):
+    for line in meta["data"].split("\n"):
         try:
             if (line != ''):
                 print(line)
