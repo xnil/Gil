@@ -60,10 +60,16 @@ meta["sock"]     = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 meta["channels"] = sys.argv[2:]
 meta["blockquoters"] = {}
 meta["userinfo"] = {}
+meta["nogreet"]  = []
 #Load users
 for user in [f for f in os.listdir("./") if os.path.isfile(os.path.join("./", f)) and f.endswith(".user")]:
     f = open("./%s" % user)
     meta["userinfo"][user[:-5]] = f.read()
+    f.close()
+#Load non-greeted users
+if (os.path.isfile("./nogreet")):
+    f = open("./nogreet")
+    meta["nogreet"] = f.readlines()
     f.close()
 
 ##########
@@ -126,7 +132,6 @@ def spitfact_(*arg):
     tmp = q.read()
     q.close()
     tmp_i = tmp.find("<div id='z'>")
-    print("yus!")
     tmp = tmp[tmp_i+12:tmp.find("<br/>", tmp_i)]
     Utils.notify_user(meta["user"], tmp)
 def spitquote_(*arg):
@@ -135,6 +140,14 @@ def spitquote_(*arg):
     else:
         params = arg[0].lstrip("#")
         Utils.spit_quote(params)
+def togglegreeting_(*arg):
+    if (meta["user"] in meta["nogreet"]):
+        meta["nogreet"] = [x for x in meta["nogreet"] if x != meta["user"]]
+    else:
+        meta["nogreet"].append(meta["user"])
+    f = open("./nogreet", 'w')
+    f.write('\n'.join(meta["nogreet"]))
+    Utils.glub()
 def quote_(*arg):
     """Works with QdbS. You may modify this function to get it to work with other sites using QdbS by simply changing the URL."""
     if len(arg) >= 1:
@@ -147,7 +160,7 @@ def quote_(*arg):
 def quotebegin_(*arg):
     """Similar to `quote_` but used for multiline quotes."""
     meta["blockquoters"][meta["user"]] = ""
-commands = {"add":add_, "help":help_, "i":i_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "quote":quote_, "quotebegin":quotebegin_}
+commands = {"add":add_, "help":help_, "i":i_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "togglegreeting":togglegreeting_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
@@ -211,6 +224,7 @@ while (1):
                                 break
                 elif (line.split(' ')[1] == "JOIN"):
                     meta["user"] = Utils.get_username(line)
-                    Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
+                    if (not meta["user"] in meta["nogreet"]):
+                        Utils.notify_user(meta["user"], "Hi, %s! Welcome to %s!" % (meta["user"], line.rstrip().split(' ')[2][1:]))
         except:
             pass
