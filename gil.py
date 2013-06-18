@@ -124,6 +124,8 @@ def info_(*arg):
 def join_(*arg):
     meta["sock"].send(''.join(["JOIN %s\r\n" % channel for channel in arg if channel.startswith("#")]))
     Utils.glub()
+def love_(*arg):
+    Utils.respond("<3")
 def spitfact_(*arg):
     q = urllib.urlopen("http://randomfactgenerator.net/")
     tmp = q.read()
@@ -157,7 +159,7 @@ def quote_(*arg):
 def quotebegin_(*arg):
     """Similar to `quote_` but used for multiline quotes."""
     meta["blockquoters"][meta["user"]] = ""
-commands = {"add":add_, "help":help_, "i":i_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "togglegreeting":togglegreeting_, "quote":quote_, "quotebegin":quotebegin_}
+commands = {"add":add_, "help":help_, "i":i_, "<3":love_, "info":info_, "join":join_, "spitfact":spitfact_, "spitquote":spitquote_, "togglegreeting":togglegreeting_, "quote":quote_, "quotebegin":quotebegin_}
 #COMMANDS
 ##########
 
