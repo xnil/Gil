@@ -41,7 +41,8 @@ meta["userinfo"] = {}
 ##########
 #COMMANDS
 def c_(*arg):
-    code = "#include <string.h>\n#include <stdlib.h>\n#include <stdio.h>\nint main(void) {%s return EXIT_SUCCESS;}" % arg
+    includes = ["<string.h>"]
+    code = ''.join(["#include "+x+"\n" for x in includes]) + "#include <stdlib.h>\n#include <stdio.h>\nint main(void) {%s return EXIT_SUCCESS;}" % arg
     f = open("./temp.c", 'w')
     f.write(code)
     f.close()
@@ -58,7 +59,8 @@ def c_(*arg):
         os.remove(os.path.abspath("temp"))
     os.remove(os.path.abspath("temp.c"))
 def cpp_(*arg):
-    code = "#include <iostream>\nusing namespace std;\nint main() {%s return 0;}" % arg
+    includes = ["<iostream>", "<stdio.h>"]
+    code = ''.join(["#include "+x+"\n" for x in includes]) + "using namespace std;\nint main() {%s return 0;}" % arg
     f = open("./temp.cpp", 'w')
     f.write(code)
     f.close()
