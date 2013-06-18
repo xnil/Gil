@@ -2,9 +2,6 @@
 ##
 # Cman IRC Bot
 ##
-# Copyright (C) 2012 by Carter Hinsley
-# All Rights Reserved.
-##
 import os
 import sys
 import socket

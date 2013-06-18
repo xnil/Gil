@@ -2,9 +2,6 @@
 ##
 # Gil IRC Bot
 ##
-# Copyright (C) 2012 by Carter Hinsley
-# All Rights Reserved.
-##
 import re
 import os
 import sys
