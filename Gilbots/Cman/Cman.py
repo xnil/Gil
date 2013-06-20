@@ -73,7 +73,43 @@ def cpp_(*arg):
         Utils.respond(output)
         os.remove(os.path.abspath("temp"))
     os.remove(os.path.abspath("temp.cpp"))
-commands = {"c":c_, "cpp":cpp_, "c++":cpp_}
+def csharp_(*arg):
+    includes = ["System"]
+    code = ''.join(["using "+x+";\n" for x in includes]) + "class MainClass { public static void Main() {%s}}" % arg
+    f = open("./temp.cs", 'w')
+    f.write(code)
+    f.close()
+    p = subprocess.Popen("mono %s -o %s" % (os.path.abspath("temp.cs"), os.path.abspath("temp")), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    output = p.stdout.read()
+    if (output):
+        Utils.respond(output.rstrip())
+    else:
+        p = subprocess.Popen("./temp", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+        output = p.stdout.read().rstrip('\n')
+        if (output == ''):
+            output = "Success."
+        Utils.respond(output)
+        os.remove(os.path.abspath("temp"))
+    os.remove(os.path.abspath("temp.cs"))
+def node_(*arg):
+    code = arg
+    f = open("./temp.js", 'w')
+    f.write(code)
+    f.close()
+    p = subprocess.Popen("node ./temp.js", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    output = p.stdout.read()
+    Utils.respond(output.rstrip())
+    os.remove(os.path.abspath("temp.js"))
+def python_(*arg):
+    code = arg
+    f = open("./temp.py", 'w')
+    f.write(code)
+    f.close()
+    p = subprocess.Popen("python ./temp.py", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    output = p.stdout.read()
+    Utils.respond(output.rstrip())
+    os.remove(os.path.abspath("temp.py"))
+commands = {"c":c_, "cpp":cpp_, "c++":cpp_, "c#":csharp_, "cs":csharp_, "csharp":csharp_, "node":node_, "js":node_, "python":python_, "py":python_}
 #COMMANDS
 ##########
 
