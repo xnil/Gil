@@ -79,7 +79,7 @@ def csharp_(*arg):
     f = open("./temp.cs", 'w')
     f.write(code)
     f.close()
-    p = subprocess.Popen("mcs %s -o %s" % (os.path.abspath("temp.cs"), os.path.abspath("temp")), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+    p = subprocess.Popen("mcs %s -out:%s" % (os.path.abspath("temp.cs"), os.path.abspath("temp")), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
     output = p.stdout.read()
     if (output):
         Utils.respond(output.rstrip())
