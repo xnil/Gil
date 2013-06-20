@@ -92,7 +92,7 @@ def csharp_(*arg):
         os.remove(os.path.abspath("temp"))
     os.remove(os.path.abspath("temp.cs"))
 def node_(*arg):
-    code = arg
+    code = arg[0]
     f = open("./temp.js", 'w')
     f.write(code)
     f.close()
@@ -101,7 +101,7 @@ def node_(*arg):
     Utils.respond(output.rstrip())
     os.remove(os.path.abspath("temp.js"))
 def python_(*arg):
-    code = arg
+    code = arg[0]
     f = open("./temp.py", 'w')
     f.write(code)
     f.close()
