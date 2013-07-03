@@ -89,15 +89,6 @@ def interpret(lang, code):
         "vb.net"      : "101"
     }[lang.lower()]
     code = code.replace("\\r", "\\\\r").replace("\\n", "\\\\n")
-    #Scheme
-    if (lang == "33"):
-        try:
-            f = open("scheme.pre")
-            prefix = f.read()
-            f.close()
-        except:
-            prefix = ""
-        code = "%s\n(display %s)" % (prefix, code)
     #C++
     if (lang == "1"):
         code = "#include <iostream>\n#include <string>\nusing namespace std;\nint main() {%s}" % code
