@@ -36,12 +36,12 @@ class Utils:
     @classmethod
     def respond(cls, message):
         for line in message.split("\n"):
-            meta["sock"].send(("PRIVMSG %s :%s: %s\r\n" % (meta["data"].split(' ')[2], meta["user"], line)).encode())
+            meta["sock"].send(("PRIVMSG %s :%s: %s\r\n" % (meta["data"].split(' ')[2], meta["user"], line)).encode("utf-8"))
         print("Said: \"%s\"" % message)
 
 meta = {}
 meta["botname"]  = "tobbot"
-meta["owners"]   = ["xnil", "xnull", "xnool", "xinihil"]
+meta["owners"]   = ["xnil", "xnull", "xnool", "xinihil", "carolyn", "carolny", "starbuck"]
 meta["data"]     = ""
 meta["message"]  = ""
 meta["user"]     = ""
@@ -53,7 +53,7 @@ meta["channels"] = sys.argv[2:]
 #COMMANDS
 def bash(cmd):
     p = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE, stderr = subprocess.PIPE, close_fds = True)
-    output = p.stdout.read().decode().rstrip('\n')
+    output = p.stdout.read().decode("utf-8").rstrip('\n')
     if len(output.split('\n')) > 3:
         output = "Output consumes too many lines."
     if (output == ''):
@@ -71,18 +71,18 @@ except:
 print("\nConnection established with %s on port 6667." % meta["server"])
 
 #Change nickname
-meta["sock"].send(("USER %s 0 * :%s\r\nNICK %s\r\n" % (meta["botname"], meta["owners"][0], meta["botname"])).encode())
+meta["sock"].send(("USER %s 0 * :%s\r\nNICK %s\r\n" % (meta["botname"], meta["owners"][0], meta["botname"])).encode("utf-8"))
 #Main loop
 while (1):
-    meta["data"] = meta["sock"].recv(1024).decode()
+    meta["data"] = meta["sock"].recv(1024).decode("utf-8")
     for line in meta["data"].split("\r\n"):
         try:
             if (line != ''):
                 print(line)
                 if (line[:5] == "PING "):
-                    meta["sock"].send(("PONG "+line[5:]+"\r\n").encode())
+                    meta["sock"].send(("PONG "+line[5:]+"\r\n").encode("utf-8"))
                 if (line.split(' ')[1] == "001"):
-                    meta["sock"].send(("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]])).encode())
+                    meta["sock"].send(("MODE "+meta["botname"]+" +B\r\n"+''.join(["JOIN %s\r\n" % channel for channel in meta["channels"]])).encode("utf-8"))
                 #If receiving PRIVMSG from a user
                 if (line.split(' ')[1] == "PRIVMSG"):
                     meta["user"] = Utils.get_username(line)
@@ -92,6 +92,6 @@ while (1):
                             bash(meta["message"][1:])
                         elif meta["message"].startswith(meta["botname"]):
                             command = ' '.join(meta["message"].split(' ')[1:])
-                            meta["sock"].send(("%s\r\n" % command).encode())
+                            meta["sock"].send(("%s\r\n" % command).encode("utf-8"))
         except:
             pass
